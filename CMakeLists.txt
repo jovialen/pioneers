@@ -7,8 +7,8 @@ add_subdirectory("libs/spdlog")
 
 # Pioneers
 
-set(PIO_HEADERS)
-set(PIO_SOURCES "src/main.cpp")
+set(PIO_HEADERS "src/log.hpp")
+set(PIO_SOURCES "src/main.cpp" "src/log.cpp")
 
 add_executable(pioneers ${PIO_SOURCES} ${PIO_HEADERS})
 
