@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.10.0 FATAL_ERROR)
 project(pioneers VERSION 0.1.0 LANGUAGES C CXX)
 
+# Dependencies
+
+add_subdirectory("libs/spdlog")
+
+# Pioneers
+
 set(PIO_HEADERS)
 set(PIO_SOURCES "src/main.cpp")
 
@@ -13,3 +19,5 @@ set_target_properties(pioneers PROPERTIES
   CXX_EXTENSIONS OFF)
 
 target_include_directories(pioneers PRIVATE "src")
+
+target_link_libraries(pioneers PRIVATE spdlog::spdlog)
