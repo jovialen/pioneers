@@ -4,6 +4,7 @@ project(pioneers VERSION 0.1.0 LANGUAGES C CXX)
 # Dependencies
 
 add_subdirectory("libs/spdlog")
+add_subdirectory("libs/asio-1.28.0")
 
 # Pioneers
 
@@ -20,4 +21,5 @@ set_target_properties(pioneers PROPERTIES
 
 target_include_directories(pioneers PRIVATE "src")
 
+target_link_libraries(pioneers PRIVATE asio)
 target_link_libraries(pioneers PRIVATE spdlog::spdlog)
