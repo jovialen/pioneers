@@ -1,6 +1,5 @@
 #include <cstdint>
 
-#include <chrono>
 #include <iostream>
 
 #include "log.hpp"
@@ -39,7 +38,7 @@ public:
 		SERVER_INFO("Recieved message {}", (int) message.header.id);
 		switch (message.header.id) {
 		case packet_id::PING: send(message.owner, message); break;
-		case packet_id::MESSAGE: send(message.owner, message); break;
+		case packet_id::MESSAGE: send_all(message, message.owner); break;
 		}
 	}
 
@@ -62,7 +61,15 @@ void run_client() {
 	c.connect("127.0.0.1", PORT);
 	c.send_ping();
 	c.send_message();
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	for (int i = 0; i < 1000000000; i++) {
+		while (!c.incoming().empty()) {
+			auto message = c.incoming().pop_front();
+			switch (message.header.id) {
+			case packet_id::PING: CLIENT_INFO("Recieved ping from the server"); break;
+			case packet_id::MESSAGE: CLIENT_INFO("Recieved message from the server"); break;
+			}
+		}
+	}
 }
 
 int main(int argc, char *argv[]) {

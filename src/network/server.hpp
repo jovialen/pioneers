@@ -70,11 +70,14 @@ namespace pio {
 				bool invalid = false;
 				for (auto &client : m_clients) {
 					if (!client || !client->is_connected()) {
+						SERVER_WARN("Cannot reach client {}, assuming disconnect and removing", client->id());
 						on_client_disconnect(client);
 						client.reset();
 						invalid = true;
 						continue;
 					}
+
+					if (client == exception) continue;
 
 					client->send(message);
 				}

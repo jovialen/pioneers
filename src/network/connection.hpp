@@ -64,6 +64,8 @@ namespace pio {
 				prime_write_header();
 			}
 
+			virtual std::shared_ptr<connection_base<T>> owner() = 0;
+
 		private:
 			void prime_read_header() {
 				asio::async_read(m_socket, asio::buffer(&m_temp.header, sizeof(message_header<T>)),
@@ -98,7 +100,9 @@ namespace pio {
 			}
 
 			void finish_read_message() {
+				m_temp.owner = owner();
 				m_incoming.push_back(m_temp);
+				m_temp.owner = nullptr;
 				prime_read_header();
 			}
 
@@ -166,13 +170,19 @@ namespace pio {
 			connection_host(asio::io_context &asio, asio::ip::tcp::socket socket, queue_mt<owned_message<T>> &incoming)
 				: connection_base<T>::connection_base(pio::log::g_server_logger, asio, std::move(socket), incoming) {}
 
+			~connection_host() {
+				if (m_accepted) {
+					SERVER_DEBUG("Disconnecting client {}", m_id);
+				}
+			}
+
 			/**
 			 * Accept the connection to the client and assosiate it with an id.
 			 */
 			void accept(client_id id) {
 				if (this->is_connected()) {
-					this->m_temp.owner = this->shared_from_this();
 					m_id = id;
+					m_accepted = true;
 					this->prime_read();
 				}
 			}
@@ -182,7 +192,13 @@ namespace pio {
 			 */
 			client_id id() const { return m_id; }
 
+		protected:
+			virtual std::shared_ptr<connection_base<T>> owner() override {
+				return this->shared_from_this();
+			}
+
 		private:
+			bool m_accepted = false;
 			client_id m_id;
 		};
 
@@ -209,6 +225,11 @@ namespace pio {
 							CLIENT_ERROR("Failed to connect to the server");
 						}
 					});
+			}
+
+		protected:
+			virtual std::shared_ptr<connection_base<T>> owner() override {
+				return nullptr;
 			}
 		};
 	}
