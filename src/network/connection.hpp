@@ -16,7 +16,7 @@ namespace pio {
 		 * Base class of any connection.
 		 */
 		template<typename T>
-		class connection_base : std::enable_shared_from_this<connection_base<T>> {
+		class connection_base {
 		protected:
 			connection_base(std::shared_ptr<spdlog::logger> logger, asio::io_context &asio, asio::ip::tcp::socket socket, queue_mt<owned_message<T>> &incoming)
 				: m_logger(logger), m_asio(asio), m_socket(std::move(socket)), m_incoming(incoming) {}
@@ -98,8 +98,7 @@ namespace pio {
 			}
 
 			void finish_read_message() {
-				owned_message<T> owned{ this->shared_from_this(), m_temp };
-				m_incoming.push_back(owned);
+				m_incoming.push_back(m_temp);
 				prime_read_header();
 			}
 
@@ -149,8 +148,9 @@ namespace pio {
 			asio::io_context &m_asio;
 			asio::ip::tcp::socket m_socket;
 
+			owned_message<T> m_temp;
+
 		private:
-			message<T> m_temp;
 			queue_mt<owned_message<T>> &m_incoming;
 			queue_mt<message<T>> m_outgoing;
 			bool m_reading = false;
@@ -161,18 +161,19 @@ namespace pio {
 		 * Server side connection. Connects to a client.
 		 */
 		template<typename T>
-		class connection_host : public connection_base<T> {
+		class connection_host : public connection_base<T>, public std::enable_shared_from_this<connection_host<T>> {
 		public:
 			connection_host(asio::io_context &asio, asio::ip::tcp::socket socket, queue_mt<owned_message<T>> &incoming)
-				: connection_base(pio::log::g_server_logger, asio, std::move(socket), incoming) {}
+				: connection_base<T>::connection_base(pio::log::g_server_logger, asio, std::move(socket), incoming) {}
 
 			/**
 			 * Accept the connection to the client and assosiate it with an id.
 			 */
 			void accept(client_id id) {
-				if (is_connected()) {
+				if (this->is_connected()) {
+					this->m_temp.owner = this->shared_from_this();
 					m_id = id;
-					prime_read();
+					this->prime_read();
 				}
 			}
 
@@ -192,17 +193,17 @@ namespace pio {
 		class connection_client : public connection_base<T> {
 		public:
 			connection_client(asio::io_context &asio, asio::ip::tcp::socket socket, queue_mt<owned_message<T>> &incoming)
-				: connection_base(pio::log::g_client_logger, asio, std::move(socket), incoming) {}
+				: connection_base<T>::connection_base(pio::log::g_client_logger, asio, std::move(socket), incoming) {}
 
 			/**
 			 * Attempt to connect to a server. Connection may fail.
 			 */
 			void connect(const asio::ip::tcp::resolver::results_type &endpoints) {
-				asio::async_connect(m_socket, endpoints,
+				asio::async_connect(this->m_socket, endpoints,
 					[this](asio::error_code ec, asio::ip::tcp::endpoint endpoint) {
 						if (!ec) {
 							CLIENT_INFO("Connected to the server");
-							prime_read();
+							this->prime_read();
 						}
 						else {
 							CLIENT_ERROR("Failed to connect to the server");

@@ -86,14 +86,8 @@ namespace pio {
 		 * A message packet owned by a specific connection.
 		 */
 		template<typename T>
-		struct owned_message {
+		struct owned_message : public message<T> {
 			std::shared_ptr<connection_base<T>> owner;
-			message<T> message;
-
-			friend std::ostream &operator<<(std::ostream &os, const owned_message<T> &message) {
-				os << message.message;
-				return os;
-			}
 		};
 	}
 }

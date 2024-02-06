@@ -19,20 +19,22 @@ namespace pio {
 			virtual ~client_interface() { disconnect(); }
 
 			void connect(const std::string &host, port host_port) {
-				try {
-					CLIENT_INFO("Connecting to {}@{}", host, host_port);
+				CLIENT_INFO("Connecting to {}@{}", host, host_port);
 
-					asio::ip::tcp::resolver resolver(m_asio);
-					auto endpoints = resolver.resolve(host, std::to_string(host_port));
+				asio::error_code ec;
 
-					m_connection = std::make_unique<connection_client<T>>(m_asio, asio::ip::tcp::socket(m_asio), m_incoming);
-					m_connection->connect(endpoints);
+				asio::ip::tcp::resolver resolver(m_asio);
+				auto endpoints = resolver.resolve(host, std::to_string(host_port), ec);
 
-					m_thread = std::thread([this]() { m_asio.run(); });
+				m_connection = std::make_unique<connection_client<T>>(m_asio, asio::ip::tcp::socket(m_asio), m_incoming);
+				m_connection->connect(endpoints);
+
+				if (ec) {
+					CLIENT_ERROR("Failed to connect to server: {}", ec.message());
+					return;
 				}
-				catch (std::exception e) {
-					CLIENT_ERROR("Failed to connect to the server: {}", e.what());
-				}
+
+				m_thread = std::thread([this]() { m_asio.run(); });
 			}
 
 			void disconnect() {

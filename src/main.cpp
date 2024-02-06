@@ -36,10 +36,10 @@ public:
 		: server_interface(PORT) {}
 
 	virtual void on_message(pio::net::owned_message<packet_id> message) override {
-		SERVER_INFO("Recieved message {}", (int) message.message.header.id);
-		switch (message.message.header.id) {
-		case packet_id::PING: send(message.owner, message.message); break;
-		case packet_id::MESSAGE: send(message.owner, message.message); break;
+		SERVER_INFO("Recieved message {}", (int) message.header.id);
+		switch (message.header.id) {
+		case packet_id::PING: send(message.owner, message); break;
+		case packet_id::MESSAGE: send(message.owner, message); break;
 		}
 	}
 
