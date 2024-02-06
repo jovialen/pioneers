@@ -8,8 +8,13 @@ add_subdirectory("libs/asio-1.28.0")
 
 # Pioneers
 
-set(PIO_HEADERS "src/log.hpp")
-set(PIO_SOURCES "src/main.cpp" "src/log.cpp")
+set(PIO_HEADERS
+	"src/log.hpp"
+	"src/network/client.hpp" "src/network/common.hpp" "src/network/connection.hpp"
+	"src/network/queue_mt.hpp" "src/network/server.hpp" "src/network/message.hpp")
+set(PIO_SOURCES "src/main.cpp" "src/log.cpp"
+	"src/network/client.cpp" "src/network/common.cpp" "src/network/connection.cpp"
+	"src/network/queue_mt.cpp" "src/network/server.cpp" "src/network/message.cpp")
 
 add_executable(pioneers ${PIO_SOURCES} ${PIO_HEADERS})
 
