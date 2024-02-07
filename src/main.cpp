@@ -61,7 +61,7 @@ void run_client() {
 	c.connect("127.0.0.1", PORT);
 	c.send_ping();
 	c.send_message();
-	for (int i = 0; i < 1000000000; i++) {
+	for (int i = 0; i < 1000000000 && c.is_connected(); i++) {
 		while (!c.incoming().empty()) {
 			auto message = c.incoming().pop_front();
 			switch (message.header.id) {
@@ -74,6 +74,7 @@ void run_client() {
 
 int main(int argc, char *argv[]) {
 	pio::log::init();
+	GFX_INFO("Graphics!");
 	if (argc == 2 && std::strcmp(argv[1], "server") == 0) {
 		run_server();
 	}

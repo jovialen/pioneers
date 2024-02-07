@@ -11,29 +11,20 @@ namespace log {
 
 std::shared_ptr<spdlog::logger> g_client_logger;
 std::shared_ptr<spdlog::logger> g_server_logger;
+std::shared_ptr<spdlog::logger> g_gfx_logger;
 
-static void configure_client_logger(spdlog::sink_ptr common_sink) {
+static std::shared_ptr<spdlog::logger> configure_logger(spdlog::sink_ptr common_sink, const std::string &file, const std::string &name) {
 	std::vector<spdlog::sink_ptr> sinks;
-	sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/client.log", true));
+	sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(file, true));
 	sinks.push_back(common_sink);
 
 	sinks[0]->set_level(spdlog::level::info);
 
-	g_client_logger = std::make_shared<spdlog::logger>("Client", sinks.begin(), sinks.end());
-	g_client_logger->set_level(spdlog::level::trace);
-	g_client_logger->set_pattern("[%T.%e] [%^%-8l%$] [%n] %s@%!:%#: %v");
-}
+	auto logger = std::make_shared<spdlog::logger>(name, sinks.begin(), sinks.end());
+	logger->set_level(spdlog::level::trace);
+	logger->set_pattern("[%T.%e] [%^%-8l%$] [%n] %s@%!:%#: %v");
 
-static void configure_server_logger(spdlog::sink_ptr common_sink) {
-	std::vector<spdlog::sink_ptr> sinks;
-	sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/server.log", true));
-	sinks.push_back(common_sink);
-
-	sinks[0]->set_level(spdlog::level::info);
-
-	g_server_logger = std::make_shared<spdlog::logger>("Server", sinks.begin(), sinks.end());
-	g_server_logger->set_level(spdlog::level::trace);
-	g_server_logger->set_pattern("[%T.%e] [%^%-8l%$] [%n] %s@%!:%#: %v");
+	return logger;
 }
 
 void init() {
@@ -49,8 +40,9 @@ void init() {
 	auto common = std::make_shared<spdlog::sinks::dist_sink_mt>(sinks);
 	common->set_level(spdlog::level::trace);
 
-	configure_client_logger(common);
-	configure_server_logger(common);
+	g_client_logger = configure_logger(common, "logs/client.log", "Client");
+	g_server_logger = configure_logger(common, "logs/server.log", "Server");
+	g_gfx_logger = configure_logger(common, "logs/gfx.log", "Graphics");
 }
 
 }
