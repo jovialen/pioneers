@@ -9,12 +9,14 @@
 int main(int argc, char *argv[]) {
 	pio::log::init();
 	pio::win::init();
-	pio::win::window win("Pioneers", glm::uvec2{ 1280, 720 });
-	win.open();
-	while (!win.should_close()) {
-		pio::win::wait_events();
+	{
+		pio::win::window win("Pioneers", glm::uvec2{ 1280, 720 });
+		win.open();
+		while (!win.should_close()) {
+			pio::win::wait_events();
+		}
+		win.close();
 	}
-	win.close();
 	pio::win::shutdown();
 	return 0;
 }

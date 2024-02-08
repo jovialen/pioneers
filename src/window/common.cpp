@@ -12,6 +12,9 @@ bool pio::win::init() {
 		GFX_CRITICAL("Failed to initialize GLFW");
 		return false;
 	}
+	glfwSetErrorCallback([](int error, const char *description) {
+		GFX_ERROR("GLFW ({}): {}", error, description);
+	});
 	return true;
 }
 

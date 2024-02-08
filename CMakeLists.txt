@@ -14,11 +14,11 @@ set(PIO_HEADERS
 	"src/log.hpp"
 	"src/network/client.hpp" "src/network/common.hpp" "src/network/connection.hpp"
 	"src/network/queue_mt.hpp" "src/network/server.hpp" "src/network/message.hpp"
-	"src/window/window.hpp" "src/window/common.hpp")
+	"src/window/window.hpp" "src/window/common.hpp" "src/window/monitor.hpp")
 set(PIO_SOURCES "src/main.cpp" "src/log.cpp"
 	"src/network/client.cpp" "src/network/common.cpp" "src/network/connection.cpp"
 	"src/network/queue_mt.cpp" "src/network/server.cpp" "src/network/message.cpp"
-	"src/window/window.cpp" "src/window/common.cpp")
+	"src/window/window.cpp" "src/window/common.cpp" "src/window/monitor.cpp")
 
 add_executable(pioneers ${PIO_SOURCES} ${PIO_HEADERS})
 
