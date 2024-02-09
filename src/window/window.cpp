@@ -36,7 +36,7 @@ void pio::win::window::open(bool visible)
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 	// The real size might not be m_size if we are making a fullscreen window
-	auto real_size = m_data.monitor == nullptr ? m_data.size : monitor().value().resolution();
+	auto real_size = m_data.monitor == nullptr ? m_data.size : get_monitor().value().resolution();
 	m_handle = glfwCreateWindow(real_size.x, real_size.y, m_data.title.c_str(), m_data.monitor, nullptr);
 
 	if (m_data.monitor == nullptr) {
@@ -145,7 +145,7 @@ bool pio::win::window::toggle_fullscreen()
 	return is_fullscreen();
 }
 
-std::optional<pio::win::monitor> pio::win::window::monitor()
+std::optional<pio::win::monitor> pio::win::window::get_monitor()
 {
 	if (m_data.monitor == nullptr) return {};
 	return pio::win::monitor{ m_data.monitor };
@@ -154,7 +154,7 @@ std::optional<pio::win::monitor> pio::win::window::monitor()
 glm::uvec2 pio::win::window::size()
 {
 	if (!is_open()) return { 0, 0 };
-	if (m_data.monitor != nullptr) return monitor().value().resolution();
+	if (m_data.monitor != nullptr) return get_monitor().value().resolution();
 	return m_data.size;
 }
 

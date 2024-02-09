@@ -84,7 +84,7 @@ namespace pio {
 			 * @return Monitor owned by the window, or an empty value if
 			 * windowed.
 			 */
-			std::optional<monitor> monitor();
+			std::optional<monitor> get_monitor();
 			/**
 			 * Get the current size of the window.
 			 */
