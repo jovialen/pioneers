@@ -43,6 +43,12 @@ namespace pio {
 			void hide();
 
 			/**
+			 * Set whether or not the window can be resized by the user.
+			 * @param[in] allowed If the window can be resized by the user.
+			 */
+			void resizable(bool allowed);
+
+			/**
 			 * Set the window into windowed mode. Will revert to the last size
 			 * or to an explicit given size if set.
 			 * @param[in] size Size to make the window.
@@ -58,6 +64,18 @@ namespace pio {
 			 * from the monitor if none is given.
 			 */
 			void set_fullscreen(std::optional<monitor> screen = {}, std::optional<const GLFWvidmode *> video_mode = {});
+			/**
+			 * If the window is fullscreened. Use the `monitor` function to get
+			 * the specific screen covered by the window.
+			 * @return If the window is fullscreened.
+			 */
+			bool is_fullscreen();
+			/**
+			 * Utility function. Will toggle between windowed mode and
+			 * fullscreen mode on the primary monitor.
+			 * @return True if fullscreen, false if not.
+			 */
+			bool toggle_fullscreen();
 
 			/**
 			 * Get the monitor owned by the window. Only set if the window is
@@ -79,12 +97,20 @@ namespace pio {
 			 */
 			bool should_close();
 
+			GLFWwindow *handle();
+
+		public:
+			struct window_data {
+				GLFWmonitor *monitor = nullptr;
+
+				std::string title;
+				glm::uvec2 size;
+				bool resizable = true;
+			};
+
 		private:
 			GLFWwindow *m_handle = nullptr;
-			GLFWmonitor *m_monitor = nullptr;
-
-			std::string m_title;
-			glm::uvec2 m_size;
+			window_data m_data;
 		};
 	}
 }
