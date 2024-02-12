@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "log.hpp"
+#include "render/context.hpp"
 #include "window/common.hpp"
 #include "window/window.hpp"
 
@@ -12,8 +13,10 @@ int main(int argc, char *argv[]) {
 	{
 		bool last = false;
 		pio::win::window win("Pioneers", glm::uvec2{ 1280, 720 });
-		win.open();
-		while (!win.should_close()) {
+		win.open(false);
+		pio::render::context ctx(win, true);
+		if (ctx.is_valid()) win.show();
+		while (!win.should_close() && ctx.is_valid()) {
 			pio::win::wait_events();
 			bool curr = glfwGetKey(win.handle(), GLFW_KEY_F11) == GLFW_PRESS;
 			if (!last && curr) {

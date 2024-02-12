@@ -78,6 +78,16 @@ namespace pio {
 			bool toggle_fullscreen();
 
 			/**
+			 * Set the title of the window.
+			 * @param title New title of the window.
+			 */
+			void set_title(const std::string &title);
+			/**
+			 * @return The title of the window.
+			 */
+			const std::string &title();
+
+			/**
 			 * Get the monitor owned by the window. Only set if the window is
 			 * fullscreen.
 			 * 

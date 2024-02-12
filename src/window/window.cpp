@@ -145,6 +145,18 @@ bool pio::win::window::toggle_fullscreen()
 	return is_fullscreen();
 }
 
+void pio::win::window::set_title(const std::string &title)
+{
+	m_data.title = title;
+	if (!is_open()) return;
+	glfwSetWindowTitle(m_handle, title.c_str());
+}
+
+const std::string &pio::win::window::title()
+{
+	return m_data.title;
+}
+
 std::optional<pio::win::monitor> pio::win::window::get_monitor()
 {
 	if (m_data.monitor == nullptr) return {};
