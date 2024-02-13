@@ -17,13 +17,13 @@ namespace pio {
 		public:
 			window(const std::string &name, const monitor &screen);
 			window(const std::string &name, const glm::uvec2 &size);
-			~window();
+			virtual ~window();
 
 			/**
 			 * Open the window.
 			 * @param[in] visible If the window should start visible or not. Visible by default.
 			 */
-			void open(bool visible = true);
+			virtual void open(bool visible = true);
 			/**
 			 * Close the window.
 			 */

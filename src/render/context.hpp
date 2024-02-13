@@ -28,8 +28,8 @@ namespace pio {
 			VkInstance m_instance = VK_NULL_HANDLE;
 			VkDebugUtilsMessengerEXT m_debug_messenger = VK_NULL_HANDLE;
 			VkSurfaceKHR m_surface = VK_NULL_HANDLE;
-			VkPhysicalDevice m_physical_device;
-			VkDevice m_device;
+			VkPhysicalDevice m_physical_device = VK_NULL_HANDLE;
+			VkDevice m_device = VK_NULL_HANDLE;
 		};
 	}
 }

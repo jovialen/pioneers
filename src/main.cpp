@@ -4,6 +4,7 @@
 
 #include "log.hpp"
 #include "render/context.hpp"
+#include "render/render_window.hpp"
 #include "window/common.hpp"
 #include "window/window.hpp"
 
@@ -12,11 +13,9 @@ int main(int argc, char *argv[]) {
 	pio::win::init();
 	{
 		bool last = false;
-		pio::win::window win("Pioneers", glm::uvec2{ 1280, 720 });
-		win.open(false);
-		pio::render::context ctx(win, true);
-		if (ctx.is_valid()) win.show();
-		while (!win.should_close() && ctx.is_valid()) {
+		pio::render::render_window win("Pioneers", glm::uvec2{ 1280, 720 }, true);
+		win.open();
+		while (!win.should_close()) {
 			pio::win::wait_events();
 			bool curr = glfwGetKey(win.handle(), GLFW_KEY_F11) == GLFW_PRESS;
 			if (!last && curr) {
