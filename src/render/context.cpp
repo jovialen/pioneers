@@ -93,6 +93,29 @@ render::context::context(win::window &win, bool validation)
 	m_valid = true;
 }
 
+std::unique_ptr<render::swap_chain> render::context::make_swap_chain(glm::uvec2 resolution, VkPresentModeKHR present_mode, VkFormat format)
+{
+	VkSurfaceFormatKHR surface_format;
+	surface_format.format = format;
+	surface_format.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+
+	vkb::SwapchainBuilder builder{ m_physical_device, m_device, m_surface };
+	auto result = builder
+		.set_desired_format(surface_format)
+		.set_desired_extent(resolution.x, resolution.y)
+		.set_desired_present_mode(present_mode)
+		.add_image_usage_flags(VK_IMAGE_USAGE_TRANSFER_DST_BIT)
+		.build();
+
+	if (result) {
+		return std::make_unique<render::swap_chain>(m_device, result.value());
+	}
+	else {
+		GFX_ERROR("Failed to create swap chain: {}", result.error().message());
+		return nullptr;
+	}
+}
+
 render::context::~context()
 {
 	GFX_INFO("Destroying vulkan context");

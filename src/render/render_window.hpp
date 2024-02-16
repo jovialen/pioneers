@@ -1,6 +1,7 @@
 #pragma once
 
 #include "context.hpp"
+#include "swap_chain.hpp"
 #include "window/monitor.hpp"
 #include "window/window.hpp"
 
@@ -10,6 +11,7 @@ namespace pio {
 		public:
 			render_window(const std::string &name, const win::monitor &screen, bool validation = false);
 			render_window(const std::string &name, const glm::uvec2 &size, bool validation = false);
+			~render_window();
 
 			virtual void open(bool visible = true) override;
 
@@ -18,6 +20,7 @@ namespace pio {
 		private:
 			bool m_validation;
 			std::unique_ptr<context> m_context;
+			std::unique_ptr<swap_chain> m_swap_chain;
 		};
 	}
 }
