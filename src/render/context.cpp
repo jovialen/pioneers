@@ -1,6 +1,7 @@
 #include "context.hpp"
 
 #include "log.hpp"
+#include "common.hpp"
 
 using namespace pio;
 
@@ -88,7 +89,22 @@ render::context::context(win::window &win, bool validation)
 		return;
 	}
 
-	m_device = device_result.value();
+	auto device = device_result.value();
+	m_device = device.device;
+
+	GFX_DEBUG("Fetching queues");
+	m_graphics_queue.queue = device.get_queue(vkb::QueueType::graphics).value();
+	m_graphics_queue.family = device.get_queue_index(vkb::QueueType::graphics).value();
+	m_present_queue.queue = device.get_queue(vkb::QueueType::present).value();
+	m_present_queue.family = device.get_queue_index(vkb::QueueType::present).value();
+	if (device.get_queue(vkb::QueueType::transfer)) {
+		m_transfer_queue.queue = device.get_queue(vkb::QueueType::transfer).value();
+		m_transfer_queue.family = device.get_queue_index(vkb::QueueType::transfer).value();
+	}
+	else {
+		GFX_WARN("Failed to find a transfer queue. Using graphics queue for transfer operations.");
+		m_transfer_queue = m_graphics_queue;
+	}
 
 	m_valid = true;
 }
@@ -116,11 +132,19 @@ std::unique_ptr<render::swap_chain> render::context::make_swap_chain(glm::uvec2 
 	}
 }
 
+void pio::render::context::wait()
+{
+	GFX_TRACE("Waiting for device to become idle");
+	VK_CHECK(vkDeviceWaitIdle(m_device));
+}
+
 render::context::~context()
 {
 	GFX_INFO("Destroying vulkan context");
 
 	if (!m_valid) return;
+
+	wait();
 
 	vkDestroyDevice(m_device, nullptr);
 	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);

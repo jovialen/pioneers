@@ -4,6 +4,7 @@
 #include <vulkan/vulkan.hpp>
 
 #include "swap_chain.hpp"
+#include "queue.hpp"
 #include "window/window.hpp"
 
 namespace pio {
@@ -29,10 +30,29 @@ namespace pio {
 				VkPresentModeKHR present_mode = VK_PRESENT_MODE_FIFO_KHR,
 				VkFormat format = VK_FORMAT_B8G8R8A8_UNORM);
 
+			/**
+			 * Wait for the context to become idle.
+			 */
+			void wait();
+
 			VkInstance &instance() { return m_instance; }
 			VkSurfaceKHR &surface() { return m_surface; }
 			VkPhysicalDevice &gpu() { return m_physical_device; }
 			VkDevice &device() { return m_device; }
+
+			/**
+			 * Queue for graphics commands.
+			 */
+			queue graphics_queue() { return m_graphics_queue; }
+			/**
+			 * Queue for presenting the swap chain.
+			 */
+			queue present_queue() { return m_present_queue; }
+			/**
+			 * Queue for transfering data. Might be the same as the graphics
+			 * queue if no seperate transfer queue is found.
+			 */
+			queue transfer_queue() { return m_transfer_queue; }
 
 		private:
 			bool m_valid = false;
@@ -42,6 +62,9 @@ namespace pio {
 			VkSurfaceKHR m_surface = VK_NULL_HANDLE;
 			VkPhysicalDevice m_physical_device = VK_NULL_HANDLE;
 			VkDevice m_device = VK_NULL_HANDLE;
+			queue m_graphics_queue{};
+			queue m_present_queue{};
+			queue m_transfer_queue{};
 		};
 	}
 }
