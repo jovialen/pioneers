@@ -45,5 +45,11 @@ void init() {
 	g_gfx_logger = configure_logger(common, "logs/gfx.log", "Graphics");
 }
 
+void shutdown() {
+	g_client_logger->flush();
+	g_server_logger->flush();
+	g_gfx_logger->flush();
+}
+
 }
 }

@@ -12,6 +12,7 @@ extern std::shared_ptr<spdlog::logger> g_server_logger;
 extern std::shared_ptr<spdlog::logger> g_gfx_logger;
 
 void init();
+void shutdown();
 
 }
 }
